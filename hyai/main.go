@@ -43,7 +43,7 @@ func synchronizeChat(client *TencentHyChat, query *HyQuery) string {
 	for res := range resp {
 		if res.Error.Code != 0 {
 			plog.Errorf("tencent hunyuan chat err:%+v\n", res.Error)
-			break
+			return fmt.Sprintf("code:%v, msg:%v", res.Error.Code, res.Error.Message)
 		}
 		//synchronize 同步打印message
 		return res.Choices[0].Messages.Content
