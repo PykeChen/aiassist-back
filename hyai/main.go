@@ -52,27 +52,23 @@ func synchronizeChat(client *TencentHyChat, query *HyQuery) string {
 }
 
 // 流式访问
-func streamChat(client *TencentHyChat) {
-	resp, err := client.Chat(context.Background(), NewRequest(Stream, []Message{
-		{
-			Role:    "user",
-			Content: "基于阿里云的oss，给定一个oss的Url链接，要求能够删除oss里的对应的文件，go语言给出",
-		},
-	}))
+func streamChat(client *TencentHyChat, query *HyQuery) (<-chan Response, error) {
+	newMsg := make([]Message, 0)
+
+	for _, item := range query.History {
+		newMsg = append(newMsg, item)
+	}
+	newMsg = append(newMsg, Message{
+		Role:    "user",
+		Content: query.Question,
+	})
+	resp, err := client.Chat(context.Background(), NewRequest(Stream, newMsg))
 	if err != nil {
 		fmt.Printf("tencent hunyuan chat err:%+v\n", err)
-		return
+		return nil, err
 	}
-
-	fmt.Println("流式访问结果: ")
-	for res := range resp {
-		if res.Error.Code != 0 {
-			fmt.Printf("tencent hunyuan chat err:%+v\n", res.Error)
-			break
-		}
-		//stream  流式打印Delta
-		fmt.Print(res.Choices[0].Delta.Content)
-	}
+	fmt.Printf("流式访问结果: 问题：%v ", query.Question)
+	return resp, nil
 }
 
 var hyClient *TencentHyChat
@@ -110,11 +106,35 @@ func hyQuery(ctx *gin.Context) {
 		}
 		return
 	}
-	queryResult := synchronizeChat(hyClient, &param)
-	ctx.String(200, queryResult)
+	if !param.Stream {
+		queryResult := synchronizeChat(hyClient, &param)
+		ctx.String(200, queryResult)
+	} else {
+		resp, err := streamChat(hyClient, &param)
+		if err != nil {
+			ctx.String(500, "error:%v", err.Error())
+			return
+		}
+
+		for res := range resp {
+			if res.Error.Code != 0 {
+				ctx.Writer.Write([]byte(fmt.Sprintf("err: (code:%v, msg:%v)", res.Error.Code, res.Error.Message)))
+				fmt.Printf("tencent hunyuan chat err:%+v\n", res.Error)
+				break
+			}
+			ctx.Writer.Write([]byte(fmt.Sprintf("%v", res.Choices[0].Delta.Content)))
+			ctx.Writer.Flush()
+			//stream  流式打印Delta
+			fmt.Print(res.Choices[0].Delta.Content, "\n")
+		}
+	}
+
 }
 
 type HyQuery struct {
 	History  []Message `json:"history" form:"history"`
 	Question string    `json:"query" form:"query"`
+	Stream   bool      `json:"stream" form:"stream"`
 }
+
+//curl -H "Content-type: application/json" -X POST -d  '{"stream", true, "history":[],"query":"不好笑"}' http://localhost:30030/hyai/query
