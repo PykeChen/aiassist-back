@@ -41,7 +41,7 @@ func FetchOssViolationUrl(linkChan chan string) {
 	}
 	// 搜索条件实例对象
 	criteria := imap.NewSearchCriteria()
-	criteria.Since = time.Now().Add(-6 * time.Hour)
+	criteria.Since = time.Now().Add(-1 * time.Hour)
 	//criteria.Header.Set("From", "system@notice.aliyun.com")
 	// ALL是默认条件
 	// See RFC 3501 section 6.4.4 for a list of searching criteria.

@@ -22,7 +22,7 @@ var (
 func main() {
 	plog.InitFileLogger(".", "logic")
 	// 定时任务去获取oss违规文件
-	queryQQMailEvery2h()
+	queryQQMailEvery30m()
 
 	//创建一个server提供用于删除oss文件的
 	gin := gin.Default()
@@ -34,13 +34,13 @@ func main() {
 	}
 }
 
-func queryQQMailEvery2h() {
+func queryQQMailEvery30m() {
 	c := cron.New()
-	_, err := c.AddFunc("@every 2h", func() {
+	_, err := c.AddFunc("@every 30m", func() {
 		queryMailTask()
 	})
 	if err != nil {
-		plog.Errorf("queryQQMailEvery2h error:%v", err)
+		plog.Errorf("queryQQMailEvery30m error:%v", err)
 	}
 	c.Start()
 	//go func() {
