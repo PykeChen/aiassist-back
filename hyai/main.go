@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"hy_golang_sdk/pkg"
 	"hy_golang_sdk/pkg/plog"
 )
 
@@ -76,11 +77,9 @@ var hyClient *TencentHyChat
 func main() {
 	//{"history:[{"role":"user","content":"给我讲个冷笑话"}, {"role":"assistant", "content":"电脑为什么冷，因为它有window"}], "query":"不好笑"}
 	//登陆控制台获取appID和密钥信息 替换下面的值
-	var SecretID = ""
-	var SecretKey = ""
 	var appID int64 = 1310744949
 
-	credential := NewCredential(SecretID, SecretKey)
+	credential := NewCredential(pkg.TxHySecretId, pkg.TxHySecretKey)
 	hyClient = NewTencentHyChat(appID, credential)
 	plog.InitFileLogger(".", "logic")
 	ginInstance := gin.Default()

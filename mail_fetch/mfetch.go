@@ -29,7 +29,7 @@ func FetchOssViolationUrl(linkChan chan string) {
 	log.Println("Connected to server.")
 
 	// 登录
-	if err := c.Login(pkg.QQ_MAIL, pkg.QQ_PASSWORD); err != nil {
+	if err := c.Login(pkg.QqMail, pkg.QqPassword); err != nil {
 		log.Fatal(err)
 	}
 	plog.Infof("%v:Logged in", time.Now().Format("2006-01-02 15:04:05"))

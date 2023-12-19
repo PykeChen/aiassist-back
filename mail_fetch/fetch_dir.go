@@ -34,7 +34,7 @@ func main3() {
 	log.Println("Connected to server.")
 
 	// 登录
-	if err := c.Login(pkg.QQ_MAIL, pkg.QQ_PASSWORD); err != nil {
+	if err := c.Login(pkg.QqMail, pkg.QqPassword); err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Logged in.")

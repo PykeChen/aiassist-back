@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	"hy_golang_sdk/mail_fetch"
+	"hy_golang_sdk/pkg"
 	"hy_golang_sdk/pkg/plog"
 	"net/url"
 	"strings"
@@ -14,8 +15,8 @@ import (
 
 var (
 	yourRegion          = "oss-cn-beijing.aliyuncs.com"
-	yourAccessKeyId     = ""
-	yourAccessKeySecret = ""
+	yourAccessKeyId     = pkg.MwOsKeyID
+	yourAccessKeySecret = pkg.MwOsKeySecret
 )
 
 func main() {
